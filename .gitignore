@@ -4,6 +4,7 @@ venv/
 
 # Environment Variables / Secrets
 .env
+.gitignore
 
 # Logs
 *.log
