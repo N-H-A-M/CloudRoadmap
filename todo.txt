@@ -1,0 +1,2 @@
+need to fix code in bot.py make it more effecient and not have duplicates
+need to secure the token to the dockerhub/make or push it there right.
