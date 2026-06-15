@@ -136,17 +136,170 @@ async def task_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    load_dotenv()
+    # 1. Try to get the token directly from the system environment first (Kubernetes style)
     TOKEN = os.getenv("BOT_TOKEN")
+    
+    # 2. Fallback: If it's not in the system environment, try loading the local .env file
+    if not TOKEN:
+        load_dotenv()
+        TOKEN = os.getenv("BOT_TOKEN")
+        
+    # 3. If it's still missing after both checks, then raise the error
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN not found in system environment or .env file")
     app = Application.builder().token(TOKEN).post_init(check_bot_identity).build()
     app.add_handler(CommandHandler("start",start))
     app.add_handler(CommandHandler("help",help))
     app.add_handler(CommandHandler("note",note_manage))
     app.add_handler(CommandHandler("task",task_command))
     app.add_handler(CommandHandler("remind", remind_command))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, smart_message))
 
     app.run_polling()
+
+async def smart_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_message.chat_id
+    text = update.message.text.strip()
+
+    tasks = USER_TASKS.setdefault(chat_id, [])
+    notes = USER_NOTES.setdefault(chat_id, {})
+
+    lower_text = text.lower()
+
+    # ===== TASKS =====
+
+    if lower_text.startswith("task "):
+        task_text = text[5:].strip()
+
+        if task_text:
+            if task_text not in tasks:
+                tasks.append(task_text)
+                tasks.sort()
+                await update.message.reply_text(
+                    f"✅ Task added:\n{task_text}"
+                )
+            else:
+                await update.message.reply_text(
+                    "⚠️ Task already exists."
+                )
+        return
+
+    if lower_text == "show tasks":
+        if not tasks:
+            await update.message.reply_text(
+                "Your task list is empty."
+            )
+            return
+
+        message_lines = ["📋 Tasks"]
+
+        for i, task in enumerate(tasks, start=1):
+            message_lines.append(f"{i}. {task}")
+
+        await update.message.reply_text(
+            "\n".join(message_lines)
+        )
+        return
+
+    # ===== NOTES =====
+
+    if lower_text.startswith("note "):
+        note_text = text[5:].strip()
+
+        note_id = f"note{len(notes)+1}"
+
+        notes[note_id] = note_text
+
+        await update.message.reply_text(
+            f"📝 Note saved:\n{note_text}"
+        )
+        return
+
+    if lower_text == "show notes":
+        if not notes:
+            await update.message.reply_text(
+                "No notes found."
+            )
+            return
+
+        message_lines = ["📝 Notes"]
+
+        for header, body in notes.items():
+            message_lines.append(
+                f"\n{header}\n{body}"
+            )
+
+        await update.message.reply_text(
+            "\n".join(message_lines)
+        )
+        return
+
+    # ===== SEARCH NOTES =====
+
+    if lower_text.startswith("search "):
+        query = lower_text.replace("search ", "")
+
+        found = []
+
+        for header, body in notes.items():
+            if query in header.lower() or query in body.lower():
+                found.append(f"{header}\n{body}")
+
+        if found:
+            await update.message.reply_text(
+                "\n\n".join(found)
+            )
+        else:
+            await update.message.reply_text(
+                "No matching notes found."
+            )
+
+        return
+
+    # ===== STATS =====
+
+    if lower_text == "stats":
+        await update.message.reply_text(
+            f"📊 Statistics\n\n"
+            f"Tasks: {len(tasks)}\n"
+            f"Notes: {len(notes)}"
+        )
+        return
+
+    # ===== MORNING =====
+
+    if lower_text == "morning":
+        lines = [
+            "☀️ Good Morning",
+            "",
+            f"Tasks: {len(tasks)}",
+            f"Notes: {len(notes)}",
+            ""
+        ]
+
+        if tasks:
+            lines.append("Today's Tasks:")
+
+            for i, task in enumerate(tasks[:5], start=1):
+                lines.append(f"{i}. {task}")
+
+        await update.message.reply_text(
+            "\n".join(lines)
+        )
+        return
+
+    # ===== HELP =====
+
+    if lower_text == "help":
+        await update.message.reply_text(
+        )
+        return
+
+    # ===== FALLBACK =====
+
+    await update.message.reply_text(
+        "❓ I didn't understand.\nType 'help' to see available commands."
+    )
 
 if __name__ == "__main__":
     main()
