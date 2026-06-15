@@ -1,0 +1,15 @@
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: telegram-bot-rolebinding
+    namespace: telegram
+
+  subjects:
+    - kind: ServiceAccount
+      name: telegram-bot-sa
+      namespace: telegram
+
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: telegram-bot-role

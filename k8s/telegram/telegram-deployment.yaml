@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+  namespace: telegram
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: telegram-bot
+
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+
+    spec:
+      serviceAccountName: telegram-bot-sa
+      containers:
+        - name: telegram-bot
+          image: nielh1/niel12-telegram-bot:latest
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+
+          env:
+
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: telegram-secret
+                  key: BOT_TOKEN
+
+            - name: DB_HOST
+              value: postgres.database.svc.cluster.local
+
+            - name: DB_NAME
+              value: telegramdb
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD

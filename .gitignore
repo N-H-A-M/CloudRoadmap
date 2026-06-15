@@ -1,14 +1,6 @@
-# Virtual Environment
-.venv/
-venv/
-
-# Environment Variables / Secrets
-.gitignore
 .env
-# Logs
-*.log
-bot.log
-
-# Python cache files (Crucial to add!)
+.idea/
+.vscode/
 __pycache__/
 *.pyc
+.venv/

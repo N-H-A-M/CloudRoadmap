@@ -1,2 +1,4 @@
 python-dotenv
 python_telegram_bot
+python-dotenv
+psycopg2-binary

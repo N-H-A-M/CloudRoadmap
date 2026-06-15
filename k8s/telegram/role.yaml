@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: telegram-bot-role
+  namespace: telegram
+
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+    - services
+    - configmaps
+
+  verbs:
+    - get
+    - list
+    - watch
