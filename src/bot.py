@@ -136,10 +136,12 @@ async def task_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    load_dotenv()
     TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
-        raise ValueError("BOT_TOKEN not found in .env")
+        load_dotenv()
+        TOKEN = os.getenv("BOT_TOKEN")
+    if not TOKEN:
+        raise ValueError("BOT_TOKEN not found in system environment or .env file")
     app = Application.builder().token(TOKEN).post_init(check_bot_identity).build()
     app.add_handler(CommandHandler("start",start))
     app.add_handler(CommandHandler("help",help))
