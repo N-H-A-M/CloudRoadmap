@@ -142,6 +142,7 @@ def main():
         TOKEN = os.getenv("BOT_TOKEN")
     if not TOKEN:
         raise ValueError("BOT_TOKEN not found in system environment or .env file")
+    TOKEN = TOKEN.strip().replace("\n", "").replace("\\n", "")
     app = Application.builder().token(TOKEN).post_init(check_bot_identity).build()
     app.add_handler(CommandHandler("start",start))
     app.add_handler(CommandHandler("help",help))

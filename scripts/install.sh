@@ -112,9 +112,9 @@ kubectl create secret generic postgres-secret \
     --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic telegram-secret \
-    --from-literal=BOT_TOKEN="$BOT_TOKEN" \
-    -n telegram \
-    --dry-run=client -o yaml | kubectl apply -f -
+  --namespace=telegram \
+  --from-literal=BOT_TOKEN=$(echo -n "YOUR_ACTUAL_TELEGRAM_TOKEN") \
+  --dry-run=client -o yaml | kubectl apply -f -
 
 # Verify Secrets
 

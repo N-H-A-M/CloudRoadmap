@@ -19,8 +19,7 @@ spec:
       serviceAccountName: telegram-bot-sa
       containers:
         - name: telegram-bot
-          image: nielh1/niel12-telegram-bot:latest
-
+          image: nielh1/telegram-bot:latest
           resources:
             requests:
               cpu: "100m"
