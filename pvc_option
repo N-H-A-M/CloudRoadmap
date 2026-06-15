@@ -1,0 +1,21 @@
+If your storage supports ReadWriteMany (RWX), such as:
+
+NFS
+CephFS
+EFS (AWS)
+Azure Files
+Some Longhorn configurations
+Some NetApp systems
+then multiple PVCs in different namespaces can point to the same underlying storage export/share.
+
+
+Cross-namespace networking: Yes, use Services.
+Cross-namespace access to the same PVC: No.
+Cross-namespace access to the same underlying files: Yes, typically via NFS, CephFS, EFS, Azure Files, or another RWX-capable shared filesystem.
+
+
+| Type           | Meaning                                  |
+| -------------- | ---------------------------------------- |
+| livenessProbe  | Should Kubernetes restart the container? |
+| readinessProbe | Should this container receive traffic?   |
+| startupProbe   | Has the app finished starting?           |

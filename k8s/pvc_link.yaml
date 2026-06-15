@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bot-pvc
+  namespace: telegram  
+spec:
+  storageClassName: ""            # Leaves this blank so it doesn't try to make a new disk
+  volumeName: "pvc-f2b9ed1b-e221-4fa6-85f2-f2686f70cd76"   # matches the exact volume of the other pvc in the other ns
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

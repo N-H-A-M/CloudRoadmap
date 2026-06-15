@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: telegram-pvc   # The name we will use to link this to our deployment
+  namespace: pvc-telegram
+spec:
+  accessModes:
+    - ReadWriteOnce       # Means the storage can be read/written by one node at a time
+  resources:
+    requests:
+      storage: 2Gi        # The amount of disk space your bot needs (e.g., 1 Gigabyte)

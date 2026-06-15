@@ -1,2 +1,59 @@
-need to fix code in bot.py make it more effecient and not have duplicates
-need to secure the token to the dockerhub/make or push it there right.
+Resource Limits and Requests
+# Add this inside spec.template.spec.containers[-]
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+3. Liveness and Readiness Probes
+# Add this inside spec.template.spec.containers[-]
+        livenessProbe:
+          exec:
+            command:
+            - python
+            - -c
+            - "import os; print('Alive')" # Or a custom health check script
+          initialDelaySeconds: 15
+          periodSeconds: 20
+# check if the pod is up and running + deployment .
+
+PVC/PV
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bot-data-pvc
+  namespace: differnet to normal 
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+configmap 
+YAML
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bot-config
+  namespace: telegram
+data:
+  LOG_LEVEL: "INFO"
+  ENABLE_WELCOME_MSG: "true"
+
+service account
+jobs
+
+cronjob
+
+rol binding/ rol
+
+cluser rol cluster roll binding
+
+# postgressql 
+
+rbac

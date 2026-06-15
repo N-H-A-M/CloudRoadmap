@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegram-ConfigMap
+  namespace: telegram  # Must match your bot's namespace
+data:
+  LOG_LEVEL: "INFO"
+  BOT_TIMEOUT: "30"
+  WELCOME_MESSAGE: "Is this working? if this displays it mean it does.."

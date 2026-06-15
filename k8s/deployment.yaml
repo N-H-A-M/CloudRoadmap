@@ -25,3 +25,47 @@ spec:
             secretKeyRef:
               name: bot-secrets # Matches the dynamic secret name from GitHub step 4
               key: BOT_TOKEN # Matches the key name from GitHub step 4
+        # --------------------------------------------------------
+        # CONFIG MAP 
+        # --------------------------------------------------------
+        - name: LOG_LEVEL
+          valueFrom:
+            ConfigMapKeyRef:
+              name: telegram-ConfigMap
+              key: LOG_LEVEL
+        - name: WELCOME_MESSAGE
+          valueFrom:
+            ConfigMapKeyRef:
+              name: telegram-ConfigMap
+              key: WELCOME_MESSAGE
+        # --------------------------------------------------------
+        # RESOURCE REQUESTS AND LIMITS
+        # --------------------------------------------------------
+          resources:
+            requests: # how much it need to run minimum
+              memory: "256Mi"
+              cpu: "250m"
+            limits: #restricts resources to a set amount to not consume too much
+              memory: "512Mi"
+              cpu: "500m"
+        # --------------------------------------------------------
+        # READINESS PROBE 
+        # --------------------------------------------------------
+          livenessProbe:
+            exec:
+              command:
+              - python3
+              - bot.py
+              - --check
+            initialDelaySeconds: 10
+            periodSeconds: 15
+        # -----------------------------------------------------------
+        # VOLUMES/STORAGE
+        # -----------------------------------------------------------
+      volumes:
+      - name: telegram-volume
+        mountPath: /app/data
+    volumes:
+    - name: telegram-volume
+      PersistentVolumeClaim:
+        claimName: bot-pvc # matches pvc_link.yaml name
