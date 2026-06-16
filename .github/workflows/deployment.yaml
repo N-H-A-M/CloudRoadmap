@@ -1,0 +1,87 @@
+name: Deploy Telegram Bot to Kubernetes
+on:
+  push:
+    branches:
+      - Investigation  # Triggers the pipeline every time you push code to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN}}
+
+    - name: Build Docker Image
+      run: |
+        docker build -t nielh1/telegram-bot:latest .
+
+    - name: tag Docker Image
+      run: |
+        docker tag  nielh1/telegrambot:latest 
+
+    - name: push Docker Image
+      run: |
+        docker push nielh1/telegram-bot:latest
+
+    - name: Create Namespaces
+      run: |
+        kubectl apply -f k8s/namespaces.yaml
+
+    - name: Create Kubernetes Secret
+      run: |
+        kubectl create secret generic bot-secrets \
+          --from-literal=BOT_TOKEN="${{ secrets.BOT_TOKEN }}" \
+          -n telegram \
+          --dry-run=client -o yaml | kubectl apply -f -
+
+        # Postgres Secrets
+        kubectl create secret generic postgres-secrets \
+          --from-literal=POSTGRES_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+          -n database \
+          --dry-run=client -o yaml | kubectl apply -f -
+
+        # Postgres Secrets
+        kubectl create secret generic postgres-secrets \
+          --from-literal=POSTGRES_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+          -n telegram \
+          --dry-run=client -o yaml | kubectl apply -f -
+
+        
+    - name: Create postgres files
+      run: |
+        kubectl apply -f k8s/postgres/postgres-services.yaml
+        kubectl apply -f k8s/postgres/postgres-pv.yaml
+        kubectl apply -f k8s/postgres/postgres-pvc.yaml
+        kubectl apply -f k8s/postgres/postgres-deployment.yaml
+
+    - name: Validate postgres creation
+      run: | 
+        kubectl get pods -n database
+        kubectl get pv -A
+        kubectl get pvc -n database
+        kubectl get services -n database
+        kubectl get deployment -n database
+
+    - name: Create telegram files
+      run: |
+        kubectl apply -f k8s/telegram/role.yaml
+        kubectl apply -f k8s/telegram/rolebinding.yaml
+        kubectl apply -f k8s/telegram/serviceaccount.yaml
+        kubectl apply -f k8s/telegram/telegram-configmap.yaml
+        kubectl apply -f k8s/telegram/telegram-deployment.yaml
+
+    - name: Validate telegram creation
+      run: | 
+        kubectl get pods -n telegram
+        kubectl get serviceaccount -n telegram
+        kubectl get role -n telegram
+        kubectl get rolebinding -n telegram
+        kubectl get configmap -n telegram
+        kubectl get deployment -n telegram
