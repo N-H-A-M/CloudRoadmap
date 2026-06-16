@@ -24,7 +24,7 @@ jobs:
 
     - name: tag Docker Image
       run: |
-        docker tag  nielh1/telegrambot:latest 
+        docker tag telegram-bot:latest nielh1/telegram-bot:latest 
 
     - name: push Docker Image
       run: |
