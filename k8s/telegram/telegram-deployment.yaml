@@ -20,6 +20,30 @@ spec:
       containers:
         - name: telegram-bot
           image: nielh1/telegram-bot:latest
+          livenessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          envFrom:
+          # configmap
+          - configMapRef:
+              name: telegram-configmap
           resources:
             requests:
               cpu: "100m"

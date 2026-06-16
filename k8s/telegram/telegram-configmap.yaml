@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telegram-configmap
+  namespace: telegram
+data:
+  # property-like keys; each key maps to a simple value
+  DB_PORT: "5432"
+  DB_HOST: "postgres.database.svc.cluster.local"
+  DB_NAME: "telegramdb"
+
+  # file-like keys
+  #telegram_key: |
+  #  keys.

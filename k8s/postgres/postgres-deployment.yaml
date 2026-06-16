@@ -16,6 +16,26 @@ spec:
       containers:
         - name: postgres
           image: postgres:16
+          livenessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
 
           resources:
             requests:
