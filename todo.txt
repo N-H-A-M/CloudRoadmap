@@ -1,5 +1,4 @@
 hpa - horizontal pod 
 network policy
 cronjob
-trivy
-snyk-
+trivy / snyk- same purpose vulerability scanning
