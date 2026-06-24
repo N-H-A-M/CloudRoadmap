@@ -62,7 +62,7 @@ jobs:
         
     - name: Create postgres files
       run: |
-        kubectl apply -f k8s/postgres/postgres-services.yaml
+        kubectl apply -f k8s/postgres/postgres-service.yaml
         kubectl apply -f k8s/postgres/postgres-pv.yaml
         kubectl apply -f k8s/postgres/postgres-pvc.yaml
         kubectl apply -f k8s/postgres/postgres-deployment.yaml
