@@ -30,9 +30,20 @@ jobs:
       run: |
         docker push nielh1/telegram-bot:latest
 
+    - name: Debug kubectl
+      run: |
+        kubectl version --client
+        kubectl config view
+        kubectl config current-context
+
+    - name: Create Kubernetes cluster (KinD)
+      uses: engineerd/setup-kind@v0.5.0
+      with:
+        version: "v0.11.1"
+        
     - name: Create Namespaces
       run: |
-        kubectl apply -f ./k8s/namespaces.yaml
+        kubectl apply -f /k8s/namespaces.yaml
 
     - name: Create Kubernetes Secret
       run: |
