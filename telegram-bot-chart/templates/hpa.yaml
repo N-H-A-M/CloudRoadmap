@@ -2,7 +2,7 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{  .Values.telegram.hpaName  }}
+  name: {{  .Values.telegram.namespace  }}-hpa
   namespace: {{  .Values.telegram.namespace  }}
 spec:
   scaleTargetRef:

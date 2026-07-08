@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{  .Values.telegram.namespace  }}-configmap
+  namespace: {{  .Values.telegram.namespace  }}
+data:
+  DB_PORT: {{  .Values.postgres.ports.iport  }} 
+  DB_HOST: "postgres.database.svc.cluster.local"
+  DB_NAME: {{  .Values.postgres.dbName  }}

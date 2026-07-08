@@ -2,9 +2,6 @@ telegram:
   name: telegram-bot
   namespace: telegram
   replicas: 1
-  serviceAccountName: telegram-bot-sa
-  configMapName: telegram-configmap
-  hpaName: telegram-hpa
 
   image:
     repository: nielh1/telegram-bot
@@ -78,10 +75,13 @@ postgres:
 
   secrets:
     secretname: postgres-secret
-    
+
   presistence:
+    capacity: "5Gi"
+    hostPath:  /data/postgres
     volumeMounts:
       mountPath: /var/lib/postgresql/data
 
     volumes:
       claimName: postgres-pvc
+

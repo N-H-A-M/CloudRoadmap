@@ -13,7 +13,7 @@ spec:
       labels:
         app: {{ .Values.telegram.name }}
     spec:
-      serviceAccountName: {{ .Values.telegram.serviceAccountName }}
+      serviceAccountName: {{  .Values.telegram.name  }}-sa
       containers:
         - name: {{ .Values.telegram.name }}
           image: "{{ .Values.telegram.image.repository }}:{{ .Values.telegram.image.tag }}"
