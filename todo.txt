@@ -1,4 +1,9 @@
-hpa - horizontal pod 
+verify argocd is working 
+hpa - horizontal pod - continue 
+helm charts
 network policy
 cronjob
 trivy / snyk- same purpose vulerability scanning
+terraform
+ansible
+aws / azure

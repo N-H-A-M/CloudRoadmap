@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.telegram.name }}
+  namespace: {{ .Values.telegram.namespace }}
+spec:
+  replicas: {{ .Values.telegram.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.telegram.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.telegram.name }}
+    spec:
+      serviceAccountName: {{ .Values.telegram.serviceAccountName }}
+      containers:
+        - name: {{ .Values.telegram.name }}
+          image: "{{ .Values.telegram.image.repository }}:{{ .Values.telegram.image.tag }}"
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: {{ .Values.telegram.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.telegram.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.telegram.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.telegram.probes.liveness.failureThreshold }}
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: {{ .Values.telegram.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.telegram.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.telegram.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.telegram.probes.readiness.failureThreshold }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.telegram.configMapName }}
+          resources:
+            requests:
+              cpu: {{ .Values.telegram.resources.requests.cpu | quote }}
+              memory: {{ .Values.telegram.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.telegram.resources.limits.cpu | quote }}
+              memory: {{ .Values.telegram.resources.limits.memory | quote }}
+          env:
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.telegram.secrets.botSecret }}
+                  key: BOT_TOKEN
+            - name: DB_HOST
+              value: {{ .Values.postgres.host }}
+            - name: DB_NAME
+              value: {{ .Values.postgres.dbName }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.telegram.secrets.postgresSecret }}
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.telegram.secrets.postgresSecret }}
+                  key: POSTGRES_PASSWORD

@@ -2,7 +2,7 @@ name: Build and Push Telegram Bot Image
 on:
   push:
     branches:
-      - Investigation
+      - helm-chart
 
 jobs:
   build-and-push:

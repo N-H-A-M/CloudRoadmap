@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{  .Values.postgres.name  }}
+  namespace: {{  .Values.postgres.namespace  }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{  .Values.postgres.name  }}
+  template:
+    metadata:
+      labels:
+        app: {{  .Values.postgres.name  }}
+    spec:
+      containers:
+        - name: {{  .Values.postgres.name  }}
+          image: "{{.Values.postgres.image.repository}}:{{.Values.postgres.image.tag}}"
+          livenessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: {{  .Values.postgres.probes.liveness.initialDelaySeconds  }}
+            periodSeconds: {{  .Values.postgres.probes.liveness.periodSeconds  }}
+            timeoutSeconds: {{  .Values.postgres.probes.liveness.timeoutSeconds  }}
+            failureThreshold: {{  .Values.postgres.probes.liveness.failureThreshold  }}
+          readinessProbe:
+            exec:
+              command: 
+                - sh
+                - -c
+                - "kill -0 1"
+            initialDelaySeconds: {{  .Values.postgres.probes.readiness.initialDelaySeconds  }}
+            periodSeconds: {{  .Values.postgres.probes.readiness.periodSeconds  }}
+            timeoutSeconds: {{  .Values.postgres.probes.readiness.timeoutSeconds  }}
+            failureThreshold: {{ .Values.postgres.probes.readiness.failureThreshold  }}
+
+          resources:
+            requests:
+              cpu: {{  .Values.postgres.resources.requests.cpu  }}
+              memory: {{  .Values.postgres.resources.requests.memory  }}
+
+            limits:
+              cpu: {{  .Values.postgres.resources.limits.cpu  }}
+              memory: {{  .Values.postgres.resources.limits.memory  }}
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: {{  .Values.postgres.secrets.secretname  }}
+                  key: POSTGRES_DB
+
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{  .Values.postgres.secrets.secretname  }}
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{  .Values.postgres.secrets.secretname  }}
+                  key: POSTGRES_PASSWORD
+
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{  .Values.postgres.presistence.volumeMounts.mountPath  }}
+
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: {{  .Values.postgres.presistence.volumes.claimName  }}

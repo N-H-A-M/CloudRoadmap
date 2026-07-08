@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/N-H-A-M/CloudRoadmap.git
-    targetRevision: Investigation
+    targetRevision: helm-chart
     path: k8s
     directory:
       recurse: true

@@ -1,0 +1,31 @@
+{{- if .Values.telegram.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{  .Values.telegram.hpaName  }}
+  namespace: {{  .Values.telegram.namespace  }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{  .Values.telegram.name  }}
+  minReplicas: {{ .Values.telegram.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.telegram.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.telegram.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.telegram.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.telegram.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.telegram.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

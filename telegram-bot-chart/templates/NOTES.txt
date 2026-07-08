@@ -1,0 +1,8 @@
+Telegram Bot has been deployed successfully!
+
+To check the status of your deployment:
+  kubectl get pods -n {{ .Values.telegram.namespace }}
+  kubectl get pods -n {{ .Values.postgres.namespace }}
+
+To check HPA status:
+  kubectl get hpa -n {{ .Values.telegram.namespace }}
